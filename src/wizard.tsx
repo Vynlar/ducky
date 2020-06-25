@@ -108,6 +108,44 @@ function FinalStep(props: StepProps) {
   );
 }
 
+interface YesNoStepProps extends StepProps {
+  question: string;
+}
+
+function YesNoStep(props: YesNoStepProps) {
+  const [answer, setAnswer] = useState<string>("");
+
+  function makeHandler(answer: string) {
+    return () => {
+      setAnswer(answer);
+      props.next && props.next();
+    };
+  }
+
+  return (
+    <StepTemplate {...props}>
+      {props.isActive ? (
+        <>
+          <Text fontWeight="bold">{props.question}</Text>
+          <Stack direction="row">
+            <Button colorScheme="red" w="24" onClick={makeHandler("No")}>
+              No
+            </Button>
+            <Button colorScheme="green" w="24" onClick={makeHandler("Yes")}>
+              Yes
+            </Button>
+          </Stack>
+        </>
+      ) : (
+        <>
+          <Text fontWeight="bold">{props.question}</Text>
+          <Text fontStyle="italic">{answer}</Text>
+        </>
+      )}
+    </StepTemplate>
+  );
+}
+
 interface TextAreaStepProps extends StepProps {
   label: string;
   helper: string;
@@ -209,10 +247,7 @@ function Wizard() {
         label="Briefly describe the problem you're having"
         helper="Tip: Don't over think it"
       />
-      <TextAreaStep
-        label="Have you tried restarting the server/clearing caches/reinstalling dependencies?"
-        helper="This gets me pretty often!"
-      />
+      <YesNoStep question="Have you tried restarting the server/clearing caches/reinstalling dependencies?" />
       <TextAreaStep
         label="List out all the assumptions you've made."
         helper="Tip: Do you best to write down everything you can think of."
