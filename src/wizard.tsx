@@ -95,7 +95,7 @@ function Wizard() {
   );
   const initialPrompt = useMemo(() => {
     return promptGenerator.next().value;
-  }, []);
+  }, [promptGenerator]);
   const [prompt, setPrompt] = useState(initialPrompt);
 
   function handleSubmit() {
