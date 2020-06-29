@@ -15,6 +15,7 @@ import {
 } from "@chakra-ui/core";
 import { Link as RLink } from "react-router-dom";
 import { AiOutlineSmile } from "react-icons/ai";
+import { motion, AnimateSharedLayout, AnimatePresence } from "framer-motion";
 
 const fadeIn = keyframes({
   from: {
@@ -29,6 +30,7 @@ interface StepProps {
   next?: () => void;
   isActive?: boolean;
   isLoading?: boolean;
+  stepId?: string;
 }
 
 interface StepFooterProps {
@@ -68,10 +70,18 @@ function StepTemplate({
   next,
   isActive,
   isLoading,
+  stepId,
 }: StepTemplateProps) {
   return (
     <Box
-      as="article"
+      as={motion.article}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{
+        opacity: 1,
+        y: 0,
+        transition: { delay: 0.2, stiffness: 100 },
+      }}
+      layoutId={stepId}
       borderRadius="lg"
       bg="white"
       boxShadow="lg"
@@ -80,6 +90,7 @@ function StepTemplate({
       w="100%"
       border="4px solid"
       borderColor={isActive ? "yellow.400" : "transparent"}
+      mb="6"
     >
       <form
         onSubmit={(e) => {
@@ -137,10 +148,33 @@ function YesNoStep(props: YesNoStepProps) {
           </Stack>
         </>
       ) : (
-        <>
-          <Text fontWeight="bold">{props.question}</Text>
-          <Text fontStyle="italic">{answer}</Text>
-        </>
+        <Box
+          as={motion.div}
+          initial="hidden"
+          animate="show"
+          variants={{
+            hidden: { x: 10 },
+            show: {
+              x: 0,
+              transition: { delay: 0.3, delayChildren: 0.3, stiffness: 100 },
+            },
+          }}
+        >
+          <Text
+            as={motion.p}
+            variants={{ hidden: { opacity: 0 }, show: { opacity: 1 } }}
+            fontWeight="bold"
+          >
+            {props.question}
+          </Text>
+          <Text
+            as={motion.p}
+            variants={{ hidden: { opacity: 0 }, show: { opacity: 1 } }}
+            fontStyle="italic"
+          >
+            {answer}
+          </Text>
+        </Box>
       )}
     </StepTemplate>
   );
@@ -159,7 +193,7 @@ function TextAreaStep(props: TextAreaStepProps) {
       {props.isActive ? (
         <>
           <FormControl>
-            <FormLabel>{props.label}</FormLabel>
+            <FormLabel fontWeight="bold">{props.label}</FormLabel>
             <Textarea
               value={response}
               onChange={(e) => setResponse(e.target.value)}
@@ -175,10 +209,33 @@ function TextAreaStep(props: TextAreaStepProps) {
           <StepFooter isValid={!!response} />
         </>
       ) : (
-        <>
-          <Text fontWeight="bold">{props.label}:</Text>
-          <Text fontStyle="italic">{response}</Text>
-        </>
+        <Box
+          as={motion.div}
+          initial="hidden"
+          animate="show"
+          variants={{
+            hidden: { x: 10 },
+            show: {
+              x: 0,
+              transition: { delay: 0.3, delayChildren: 0.3, stiffness: 100 },
+            },
+          }}
+        >
+          <Text
+            as={motion.p}
+            variants={{ hidden: { opacity: 0 }, show: { opacity: 1 } }}
+            fontWeight="bold"
+          >
+            {props.label}
+          </Text>
+          <Text
+            as={motion.p}
+            variants={{ hidden: { opacity: 0 }, show: { opacity: 1 } }}
+            fontStyle="italic"
+          >
+            {response}
+          </Text>
+        </Box>
       )}
     </StepTemplate>
   );
@@ -201,7 +258,7 @@ function Steps({ children }: StepsProps) {
 
     setTimeout(() => {
       setLoading(false);
-      setCurrentStep((old) => old + 1);
+      setCurrentStep((oldStep) => oldStep + 1);
     }, delay);
   }
 
@@ -210,14 +267,15 @@ function Steps({ children }: StepsProps) {
       next,
       isActive: i === currentStep,
       isLoading: loading && i === currentStep,
+      stepId: i.toString(),
     };
     if (i > currentStep) return null;
     return React.cloneElement(child, props);
   });
 
   return (
-    <Stack w="100%" spacing="6">
-      {newChildren}
+    <Stack style={{ width: "100%" }}>
+      <AnimateSharedLayout>{newChildren}</AnimateSharedLayout>
     </Stack>
   );
 }
@@ -249,7 +307,7 @@ function Wizard() {
       />
       <YesNoStep question="Have you tried restarting the server/clearing caches/reinstalling dependencies?" />
       <TextAreaStep
-        label="List out all the assumptions you've made."
+        label="List out all the assumptions you've made"
         helper="Tip: Do you best to write down everything you can think of."
       />
       <TextAreaStep
