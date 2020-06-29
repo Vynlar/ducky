@@ -123,7 +123,7 @@ interface YesNoStepProps extends StepProps {
   question: string;
 }
 
-function YesNoStep(props: YesNoStepProps) {
+function ConfirmStep(props: YesNoStepProps) {
   const [answer, setAnswer] = useState<string>("");
 
   function makeHandler(answer: string) {
@@ -139,11 +139,15 @@ function YesNoStep(props: YesNoStepProps) {
         <>
           <Text fontWeight="bold">{props.question}</Text>
           <Stack direction="row">
-            <Button colorScheme="red" w="24" onClick={makeHandler("No")}>
-              No
+            <Button
+              colorScheme="red"
+              onClick={makeHandler("That wasn't the problem")}
+            >
+              That wasn't the problem
             </Button>
-            <Button colorScheme="green" w="24" onClick={makeHandler("Yes")}>
-              Yes
+
+            <Button as={RLink} to="/success" colorScheme="green">
+              That was it!
             </Button>
           </Stack>
         </>
@@ -305,7 +309,7 @@ function Wizard() {
         label="Briefly describe the problem you're having"
         helper="Tip: Don't over think it"
       />
-      <YesNoStep question="Have you tried restarting the server/clearing caches/reinstalling dependencies?" />
+      <ConfirmStep question="Have you tried restarting the server/clearing caches/reinstalling dependencies?" />
       <TextAreaStep
         label="List out all the assumptions you've made"
         helper="Tip: Do you best to write down everything you can think of."
