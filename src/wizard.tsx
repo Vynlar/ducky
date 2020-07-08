@@ -15,7 +15,7 @@ import {
 } from "@chakra-ui/core";
 import { Link as RLink } from "react-router-dom";
 import { AiOutlineSmile } from "react-icons/ai";
-import { motion, AnimateSharedLayout, AnimatePresence } from "framer-motion";
+import { motion, AnimateSharedLayout } from "framer-motion";
 
 const fadeIn = keyframes({
   from: {
